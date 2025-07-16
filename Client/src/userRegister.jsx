@@ -1,5 +1,7 @@
 import React from "react";
 import { useState } from "react";
+import axios from "axios";
+import { Navigate, useNavigate } from "react-router-dom";
 
 const skillList = [
   "Web Development",
@@ -25,6 +27,8 @@ const skillList = [
 ];
 
 function UserRegister() {
+  const navigate = useNavigate();
+
   const [userName, setUserName] = useState("");
   const [role, setRole] = useState("");
   const [teachSkills, setTeachSkills] = useState([]);
@@ -48,9 +52,31 @@ function UserRegister() {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitted(true);
+    const userData = {
+      name: userName,
+      role,
+      learnSkills,
+      teachSkills,
+    };
+
+    try {
+      const response =await axios.post(
+        "http://localhost:5000/api/users/register",
+        userData
+      );
+
+      console.log("User registered successfully:", response.data);
+
+      setIsSubmitted(true);
+       navigate(`/dashboard/${response.data._id}`);
+    } catch (error) {
+      console.error("Error registering user:", error);
+      alert("Failed to register user. Please try again.");
+    }
+
     setTimeout(() => {
       setIsSubmitted(false);
     }, 2000);
@@ -93,8 +119,7 @@ function UserRegister() {
     },
     wrapper: {
       maxWidth: "1000px",
-       
-       
+
       margin: "0 auto",
     },
     progressContainer: {
