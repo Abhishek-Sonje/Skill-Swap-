@@ -1,0 +1,299 @@
+.ur-container {
+    min-height: 100vh;
+    background: #FDF6EE;
+    padding: 20px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.ur-wrapper {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.ur-progress-container {
+    margin-bottom: 40px;
+}
+
+.ur-progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.ur-progress-text {
+    color: #333333;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.ur-progress-bar {
+    width: 100%;
+    height: 8px;
+    background-color: #e0e0e0;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.ur-progress-fill {
+    height: 100%;
+    background-color: #27BDBE;
+    transition: width 0.5s ease;
+}
+
+.ur-card {
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    padding: 40px;
+    border: 1px solid #E0E0E0;
+}
+
+.ur-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.ur-title {
+    font-size: 28px;
+    font-weight: 600;
+    color: #1C1C1C;
+    margin-bottom: 8px;
+}
+
+.ur-subtitle {
+    font-size: 16px;
+    color: #666666;
+    line-height: 1.5;
+}
+
+.ur-step-container {
+    margin-bottom: 32px;
+}
+
+.ur-input {
+    width: 100%;
+    padding: 16px;
+    font-size: 16px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    outline: none;
+    background-color: #fafafa;
+    transition: border-color 0.3s, background-color 0.3s;
+}
+
+.ur-input:focus {
+    border-color: #27BDBE;
+    background-color: white;
+}
+
+.ur-role-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-top: 20px;
+}
+
+.ur-role-card {
+    padding: 24px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background-color: white;
+    user-select: none;
+}
+
+.ur-role-card.selected,
+.ur-role-card:hover {
+    border-color: #27BDBE;
+    background-color: #F0FDFD;
+    transform: translateY(-2px);
+}
+
+.ur-role-emoji {
+    font-size: 32px;
+    margin-bottom: 12px;
+    display: block;
+}
+
+.ur-role-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1C1C1C;
+    margin-bottom: 4px;
+}
+
+.ur-role-description {
+    font-size: 14px;
+    color: #666666;
+}
+
+.ur-skills-section {
+    margin-bottom: 32px;
+}
+
+.ur-skills-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #1C1C1C;
+    margin-bottom: 16px;
+}
+
+.ur-skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+}
+
+.ur-skill-card {
+    position: relative;
+    padding: 16px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+    background-color: white;
+    text-align: center;
+    user-select: none;
+}
+
+.ur-skill-card.selected,
+.ur-skill-card:hover {
+    border-color: #27BDBE;
+    background-color: #F0FDFD;
+    transform: translateY(-1px);
+}
+
+.ur-skill-text {
+    font-size: 14px;
+    font-weight: 500;
+    color: #1C1C1C;
+}
+
+.ur-checkmark {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 20px;
+    height: 20px;
+    background-color: #27BDBE;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ur-navigation {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 40px;
+    padding-top: 24px;
+    border-top: 1px solid #e0e0e0;
+}
+
+.ur-button {
+    padding: 12px 24px;
+    border-radius: 8px;
+    border: none;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s, background 0.3s;
+    outline: none;
+}
+
+.ur-button:disabled {
+    background-color: #e0e0e0 !important;
+    color: #999999 !important;
+    cursor: not-allowed;
+}
+
+.ur-button-secondary {
+    background-color: #e0e0e0;
+    color: #333333;
+}
+
+.ur-button-secondary:not(:disabled):hover {
+    background-color: #d0d0d0;
+}
+
+.ur-button-primary {
+    background-color: #27BDBE;
+    color: white;
+}
+
+.ur-button-primary:not(:disabled):hover {
+    background-color: #1FA5A6;
+}
+
+.ur-button-accent {
+    background: linear-gradient(45deg, #F57C00, #FF9800);
+    color: white;
+}
+
+.ur-button-accent:not(:disabled):hover {
+    background: linear-gradient(45deg, #E65100, #F57C00);
+}
+
+.ur-success-container {
+    min-height: 100vh;
+    background-color: #FDF6EE;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ur-success-card {
+    background-color: white;
+    border-radius: 12px;
+    padding: 40px;
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e0e0e0;
+}
+
+.ur-success-icon {
+    width: 64px;
+    height: 64px;
+    background-color: #27BDBE;
+    border-radius: 50%;
+    margin: 0 auto 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ur-success-title {
+    font-size: 24px;
+    font-weight: 600;
+    color: #1C1C1C;
+    margin-bottom: 8px;
+}
+
+.ur-success-text {
+    font-size: 16px;
+    color: #666666;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+
+    .ur-card,
+    .ur-success-card {
+        padding: 16px;
+    }
+
+    .ur-skills-grid {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    .ur-progress-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+    }
+}
