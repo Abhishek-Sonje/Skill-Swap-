@@ -5,6 +5,10 @@ const userSchema = new mongoose.Schema({
     role: { type: String, required: true },
     teachSkills: [String],
     learnSkills: [String],
+    avatarConfig: {
+        type: Object,
+        default:{},
+    }
 });
 
 const User = mongoose.model("User", userSchema);

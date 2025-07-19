@@ -1,10 +1,12 @@
 const User = require("../models/user.js");
 
+
 const registerUser = async (req, res) => {
-  const { name, role, teachSkills, learnSkills } = req.body;
+  const { name, role, teachSkills, learnSkills, avatarConfig } = req.body;
+  
 
   try {
-    const user = new User({ name, role, teachSkills, learnSkills });
+    const user = new User({ name, role, teachSkills, learnSkills , avatarConfig });
     const savedUser = await user.save();
     res.status(201).json(savedUser);
   } catch (error) {
@@ -47,8 +49,22 @@ const matchUser = async (req, res) => {
   }
 }
 
+const userInfo = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.status(200).json(user);
+  } catch (error) {
+    console.error("❌ Error fetching user:", error.message);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 module.exports = {
   registerUser,
   getUsers,
-  matchUser
+  matchUser,
+  userInfo
 };

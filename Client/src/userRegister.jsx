@@ -3,6 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import "./UserRegister.css";
 import SkillGrid from "./components/skillGrid";
+import Avatar, { genConfig } from "react-nice-avatar";
 
 const skillList = [
   "Web Development",
@@ -55,11 +56,13 @@ function UserRegister() {
 
   const handleFinalSubmit = async () => {
     setIsSubmitted(true);
+    const config = genConfig();
     const userData = {
       name: userName,
       role,
       learnSkills,
       teachSkills,
+      avatarConfig: config,
     };
 
     try {
