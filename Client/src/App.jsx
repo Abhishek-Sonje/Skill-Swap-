@@ -1,10 +1,12 @@
-// import "./App.css";
+import "./App.css";
 import React from "react";
-import UserRegister from "./userRegister";
-import Dashboard from "./dashboard";
-import Navbar from "./Navbar";
-import HomePage from "./HomePage";
-import User from "./UserProfilePage"; 
+import UserRegister from "./pages/userRegister";
+import Dashboard from "./pages/dashboard";
+import Navbar from "./components/Navbar";
+import HomePage from "./pages/HomePage";
+import User from "./pages/UserProfilePage";
+import UserLogin from "./pages/userLogin";
+// import UserRegister from "./pages/UserRegister";
 import { Routes, Route } from "react-router-dom";
 // import { User } from "lucide-react";
 
@@ -13,12 +15,11 @@ function App() {
     <>
       {/* <Navbar userName={"User"} /> */}
       <Routes>
-        {/* <Route path="/" element={<HomePage />} /> */}
-        {/* <Route path="/register" element={<UserRegister />} /> */}
-        {/* <Route path="/dashboard/:id" element={<Dashboard />} /> */}
+        <Route path="/" element={<HomePage />} />
+        <Route path="/register" element={<UserRegister />} />
+        <Route path="/login" element={<UserLogin />} />
+        <Route path="/dashboard/:id" element={<Dashboard />} />
         <Route path="/user/:id" element={<User />} />
-        {/* Example - add more routes if needed */}
-        {/* <Route path="/" element={<HomePage />} /> */}
       </Routes>
     </>
   );

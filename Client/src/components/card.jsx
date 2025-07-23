@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "../dashboard.css";
+import "../styles/dashboard.css";
 
 export default function UserCard({ match }) {
   const [isHovered, setIsHovered] = useState(false);

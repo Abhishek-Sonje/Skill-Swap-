@@ -1,4 +1,4 @@
-import "../userRegister.css";
+import "../styles/userRegister.css";
 
 export default function SkillGrid({
   skills,
