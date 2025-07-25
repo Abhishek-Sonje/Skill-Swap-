@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { FaUserCircle, FaBars, FaTimes } from "react-icons/fa";
 import "../styles/Navbar.css";
 import SkillSwaplogo from "../assets/SkillSwaplogo.png";
+import axios from "axios";
  // Assuming you have a logo image
 
 function Navbar({ userName = "User" }) {
@@ -18,8 +19,9 @@ function Navbar({ userName = "User" }) {
     .toUpperCase();
 
   // Handle dropdown
-  const handleLogout = () => {
+  const handleLogout = async () => {
     // TODO: Add logout logic here if needed
+    await axios.post("localhost:5000/api/auth/logout");
     navigate("/"); // Go back home
   };
 

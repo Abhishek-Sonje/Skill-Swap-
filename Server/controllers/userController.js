@@ -1,34 +1,36 @@
 const User = require("../models/user.js");
+const mongoose = require("mongoose");
 
+// const registerUser = async (req, res) => {
+//   const { name, role, teachSkills, learnSkills, avatarConfig } = req.body;
 
-const registerUser = async (req, res) => {
-  const { name, role, teachSkills, learnSkills, avatarConfig } = req.body;
-  
-
-  try {
-    const user = new User({ name, role, teachSkills, learnSkills , avatarConfig });
-    const savedUser = await user.save();
-    res.status(201).json(savedUser);
-  } catch (error) {
-    console.error("❌ Error registering user:", error.message);
-    res.status(500).json({ message: "Internal server error" });
-  }
-};
+//   try {
+//     const user = new User({ name, role, teachSkills, learnSkills , avatarConfig });
+//     const savedUser = await user.save();
+//     res.status(201).json(savedUser);
+//   } catch (error) {
+//     console.error("❌ Error registering user:", error.message);
+//     res.status(500).json({ message: "Internal server error" });
+//   }
+// };
 
 const getUsers = (req, res) => {
   User.find({})
-    .then(users => {
+    .then((users) => {
       res.status(200).json(users);
     })
-    .catch(error => {
+    .catch((error) => {
       console.error("❌ Error fetching users:", error.message);
       res.status(500).json({ message: "Internal server error" });
     });
 };
 
 const matchUser = async (req, res) => {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({ message: "Invalid user ID" });
+    }
   try {
-    let user =await User.findById(req.params.id);
+    let user = await User.findById(req.params.id);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -37,19 +39,20 @@ const matchUser = async (req, res) => {
       _id: { $ne: user._id },
       $or: [
         { teachSkills: { $in: user.learnSkills } },
-        { learnSkills: { $in: user.teachSkills } }
+        { learnSkills: { $in: user.teachSkills } },
       ],
     });
     res.status(200).json(matches);
-    
-  }
-  catch (error) {
+  } catch (error) {
     console.error("❌ Error matching user:", error.message);
     res.status(500).json({ message: "Internal server error" });
   }
-}
+};
 
 const userInfo = async (req, res) => {
+  if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+    return res.status(400).json({ message: "Invalid user ID" });
+  }
   try {
     const user = await User.findById(req.params.id);
     if (!user) {
@@ -63,8 +66,8 @@ const userInfo = async (req, res) => {
 };
 
 module.exports = {
-  registerUser,
+  // registerUser,
   getUsers,
   matchUser,
-  userInfo
+  userInfo,
 };
