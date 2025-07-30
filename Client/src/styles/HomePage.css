@@ -1,249 +1,507 @@
-.ss-home {
+.skillswap-root {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    background: #FDF6EE;
-    min-height: 100vh;
-    color: #1c1c1c;
+    line-height: 1.6;
+    color: #1a1a1a;
+    overflow: hidden;
 }
 
-.ss-hero {
+/* HEADER */
+.skillswap-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    z-index: 1000;
+    padding: 1rem 2rem;
     display: flex;
-    flex-wrap: wrap;
-    align-items: center;
     justify-content: space-between;
-    min-height: 60vh;
-    background: linear-gradient(135deg, #27BDBE 0%, #1FA5A6 55%, #178B8C 100%);
-    padding: 48px 24px 32px 24px;
-    color: white;
-    border-radius: 0 0 40px 40px;
+    align-items: center;
+    transition: all 0.3s ease;
 }
 
-.ss-hero-content {
-    max-width: 480px;
-    flex: 1;
-    padding: 18px 0;
-}
-
-.ss-title {
-    font-size: 2.7rem;
-    font-weight: 900;
-    letter-spacing: 2px;
-    margin-bottom: 16px;
-    text-shadow: 0 4px 16px rgba(39, 189, 190, 0.15);
-}
-
-.ss-subtitle {
+.skillswap-logo {
     font-size: 1.5rem;
-    margin-bottom: 10px;
-    color: #ffe55e;
-    font-weight: 500;
-    text-shadow: 0 2px 16px rgba(39, 189, 190, 0.11);
+    font-weight: bold;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
-.ss-description {
-    font-size: 1.17rem;
-    margin-bottom: 30px;
-    opacity: .96;
-    line-height: 1.7;
-}
-
-.ss-cta {
-    background: linear-gradient(135deg, #ffe55e 24%, #27BDBE 85%);
-    color: #178B8C;
-    font-size: 1.2rem;
-    font-weight: 700;
-    border: none;
-    padding: 16px 38px;
-    border-radius: 12px;
-    box-shadow: 0 4px 24px rgba(39, 189, 190, 0.12);
-    cursor: pointer;
-    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
-}
-
-.ss-cta:hover {
-    background: linear-gradient(120deg, #fffbe5 10%, #ffe55e 80%);
-    color: #27BDBE;
-    box-shadow: 0 8px 32px rgba(39, 189, 190, 0.19);
-}
-
-/* Hero illustration */
-.ss-hero-art {
-    flex: 1;
+.skillswap-nav {
     display: flex;
-    justify-content: flex-end;
+    gap: 2rem;
     align-items: center;
 }
 
-.ss-hero-img {
-    max-width: 350px;
-    width: 100%;
-    border-radius: 24px;
-    box-shadow: 0 8px 48px rgba(23, 139, 140, 0.14);
+.skillswap-link {
+    text-decoration: none;
+    color: #666;
+    transition: color 0.3s ease;
 }
 
-.ss-info-section {
-    max-width: 1050px;
-    margin: 0 auto;
-    padding: 64px 20px 20px 20px;
+.skillswap-link:hover {
+    color: #667eea;
 }
 
-.ss-info-title {
-    font-size: 2.2em;
-    font-weight: 800;
-    text-align: center;
-    margin-bottom: 42px;
-    color: #178B8C;
-    letter-spacing: 2px;
+.skillswap-join-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 50px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
 }
 
-.ss-features {
+.skillswap-join-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+}
+
+/* HERO SECTION */
+.skillswap-hero {
+    min-height: 100vh;
     display: flex;
-    justify-content: center;
-    gap: 44px;
-    flex-wrap: wrap;
-    margin-bottom: 22px;
+    align-items: center;
+    padding: 2rem;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    position: relative;
+    overflow: hidden;
 }
 
-.ss-feature-card {
-    background: white;
-    border-radius: 18px;
-    box-shadow: 0 6px 32px rgba(39, 189, 190, 0.08);
-    padding: 38px 28px;
-    width: 100%;
-    max-width: 280px;
-    text-align: center;
-    margin-bottom: 32px;
-    border: 1.5px solid #f0fdfd;
-    transition: box-shadow 0.2s, transform 0.15s;
+.skillswap-bg-circle {
+    position: absolute;
+    border-radius: 50%;
 }
 
-.ss-feature-card:hover {
-    box-shadow: 0 10px 46px rgba(39, 189, 190, 0.15);
-    transform: translateY(-3px) scale(1.04);
+.skillswap-bg-circle1 {
+    top: 10%;
+    left: 10%;
+    width: 100px;
+    height: 100px;
+    background: rgba(102, 126, 234, 0.1);
+    animation: float 6s ease-in-out infinite;
 }
 
-.ss-feature-icon {
-    font-size: 2.3rem;
-    margin-bottom: 10px;
-    display: inline-block;
+.skillswap-bg-circle2 {
+    top: 60%;
+    right: 15%;
+    width: 60px;
+    height: 60px;
+    background: rgba(236, 72, 153, 0.1);
+    animation: float 4s ease-in-out infinite reverse;
 }
 
-.ss-feature-card h3 {
-    font-size: 1.25rem;
-    margin-bottom: 8px;
-    color: #27BDBE;
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-20px);
+    }
+}
+
+.skillswap-hero-grid {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+}
+
+.skillswap-hero-left {
+    transform: translateX(-50px);
+    opacity: 0;
+    transition: all 1s ease;
+}
+
+.skillswap-hero-animate {
+    transform: translateX(0) scale(1) !important;
+    opacity: 1 !important;
+}
+
+.skillswap-hero-title {
+    font-size: 3.5rem;
     font-weight: 700;
-    letter-spacing: 1.2px;
+    margin-bottom: 1.5rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.2;
 }
 
-.ss-feature-card p {
-    font-size: 1.03rem;
-    color: #555;
-}
-
-.ss-prompt-section {
-    background: linear-gradient(123deg, #f0fdfd 50%, #ffe55e 100%);
-    margin: 64px 0 0 0;
-    padding: 48px 10px 46px 10px;
-    border-radius: 24px;
-    max-width: 860px;
-    margin-left: auto;
-    margin-right: auto;
-    text-align: center;
-}
-
-.ss-prompt-title {
-    font-size: 2em;
-    color: #1FA5A6;
-    font-weight: 700;
-    margin-bottom: 16px;
-}
-
-.ss-prompt-text {
+.skillswap-hero-desc {
     font-size: 1.2rem;
-    margin-bottom: 20px;
+    color: #666;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+}
+
+.skillswap-cta-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 50px;
+    cursor: pointer;
+    font-size: 1.1rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 30px rgba(102, 126, 234, 0.3);
+}
+
+.skillswap-cta-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 40px rgba(102, 126, 234, 0.4);
+}
+
+.skillswap-hero-right {
+    position: relative;
+    transform: scale(0.8);
+    opacity: 0;
+    transition: all 1s ease 0.3s;
+}
+
+.skillswap-popular-box {
+    background: white;
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(20px);
+}
+
+.skillswap-popular-title {
+    margin-bottom: 1.5rem;
     color: #333;
 }
 
-.ss-highlight {
-    color: #F57C00;
-    font-weight: 700;
+.skillswap-skills-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
 }
 
-.ss-cta-2 {
-    background: linear-gradient(135deg, #27BDBE 32%, #1FA5A6 79%);
-    color: #fff;
-    font-size: 1.1rem;
-    font-weight: 700;
-    border: none;
-    padding: 13px 34px;
+.skillswap-skill-card {
     border-radius: 12px;
-    cursor: pointer;
-    margin-top: 8px;
-    box-shadow: 0 4px 32px rgba(39, 189, 190, 0.14);
-    transition: background 0.2s, box-shadow 0.2s, color 0.2s;
-}
-
-.ss-cta-2:hover {
-    background: linear-gradient(100deg, #ffe55e 8%, #27BDBE 88%);
-    color: #178B8C;
-}
-
-.ss-footer {
+    padding: 1rem;
     text-align: center;
-    padding: 25px 10px 30px 10px;
-    font-size: 1.09em;
-    color: #27BDBE;
-    letter-spacing: 1.5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    animation: fadeInUp 0.6s ease both;
 }
 
+.skillswap-skill-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px #667eea25;
+}
 
-@media (max-width: 900px) {
-    .ss-hero {
-        flex-direction: column;
-        align-items: flex-start;
-        border-radius: 0 0 32px 32px;
+.skillswap-skill-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin: 0 auto 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.2rem;
+}
+
+.skillswap-skill-label {
+    font-weight: 500;
+    color: #333;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
     }
 
-    .ss-hero-art {
-        justify-content: center;
-        margin-top: 40px;
-    }
-
-    .ss-hero-img {
-        max-width: 250px;
-    }
-
-    .ss-features {
-        flex-direction: column;
-        align-items: center;
-        gap: 24px;
-    }
-
-    .ss-info-section {
-        padding-left: 5px;
-        padding-right: 5px;
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 }
 
-@media (max-width: 500px) {
-    .ss-title {
-        font-size: 1.55rem;
-    }
+/* HOW IT WORKS */
+.skillswap-how {
+    padding: 5rem 2rem;
+    background: white;
+}
 
-    .ss-subtitle {
-        font-size: 1.15rem;
-    }
+.skillswap-how-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    text-align: center;
+}
 
-    .ss-hero {
-        padding: 24px 6px 16px 6px;
-    }
+.skillswap-section-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 3rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    /* -webkit-text-fill-color: transparent; */
+    background-clip: text;
+}
 
-    .ss-info-title {
-        font-size: 1.3em;
-    }
+.skillswap-how-steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 3rem;
+    margin-top: 3rem;
+}
 
-    .ss-prompt-section {
-        padding: 29px 3px 25px 3px;
-        border-radius: 16px;
-    }
+.skillswap-how-step {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    border-radius: 20px;
+    padding: 2.5rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.skillswap-how-step:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+.skillswap-how-stepnum {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.skillswap-how-steptitle {
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #333;
+}
+
+.skillswap-how-stepdesc {
+    color: #666;
+    line-height: 1.6;
+}
+
+/* FEATURES */
+.skillswap-features {
+    padding: 5rem 2rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.skillswap-features-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.skillswap-features-title {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.skillswap-features-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
+}
+
+.skillswap-feature-card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    border-radius: 20px;
+    padding: 2rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.skillswap-feature-card:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.02);
+}
+
+.skillswap-feature-icon {
+    color: #fff;
+    margin-bottom: 1rem;
+}
+
+.skillswap-feature-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.skillswap-feature-desc {
+    opacity: 0.9;
+    line-height: 1.6;
+}
+
+/* TESTIMONIALS */
+.skillswap-testimonials {
+    padding: 5rem 2rem;
+    background: white;
+}
+
+.skillswap-testimonials-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.skillswap-testimonials-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.skillswap-testimonial-card {
+    background: #f8fafc;
+    color: #333;
+    border-radius: 20px;
+    padding: 2rem;
+    transition: all 0.5s ease;
+    cursor: pointer;
+    transform: scale(1);
+    box-shadow: none;
+}
+
+.skillswap-testimonial-card.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    transform: scale(1.05);
+    box-shadow: 0 20px 40px rgba(102, 126, 234, 0.3);
+}
+
+.skillswap-testimonial-avatar {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.skillswap-testimonial-text {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    opacity: 0.8;
+}
+
+.skillswap-testimonial-card.active .skillswap-testimonial-text {
+    opacity: 0.95;
+}
+
+.skillswap-testimonial-name {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.skillswap-testimonial-skill {
+    font-size: 0.9rem;
+    opacity: 0.6;
+}
+
+.skillswap-testimonial-card.active .skillswap-testimonial-skill {
+    opacity: 0.8;
+}
+
+/* CTA */
+.skillswap-cta {
+    padding: 5rem 2rem;
+    background: linear-gradient(135deg, #1e3a8a 0%, #3730a3 100%);
+    color: white;
+    text-align: center;
+}
+
+.skillswap-cta-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.skillswap-cta-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+}
+
+.skillswap-cta-desc {
+    font-size: 1.2rem;
+    margin-bottom: 2.5rem;
+    opacity: 0.9;
+}
+
+.skillswap-cta-join {
+    background: white;
+    color: #1e3a8a;
+    border: none;
+    padding: 1.2rem 3rem;
+    border-radius: 50px;
+    cursor: pointer;
+    font-size: 1.2rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 30px rgba(255, 255, 255, 0.3);
+}
+
+.skillswap-cta-join:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 40px rgba(255, 255, 255, 0.4);
+}
+
+/* FOOTER */
+.skillswap-footer {
+    background: #1a1a1a;
+    color: white;
+    padding: 3rem 2rem 1rem;
+    text-align: center;
+}
+
+.skillswap-footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.skillswap-footer-links {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+.skillswap-footer-link {
+    color: #ccc;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.skillswap-footer-link:hover {
+    color: #667eea;
+}
+
+.skillswap-footer-copy {
+    color: #666;
+    font-size: 0.9rem;
 }

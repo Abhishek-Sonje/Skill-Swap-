@@ -1,25 +1,57 @@
 import "./App.css";
-import React from "react";
-import UserRegister from "./pages/userRegister";
-import Dashboard from "./pages/dashboard";
-import Navbar from "./components/Navbar";
+import { useContext } from "react";
+import { Routes, Route, useLocation } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+
+// Pages
 import HomePage from "./pages/HomePage";
-import User from "./pages/UserProfilePage";
-import UserLogin from "./pages/userLogin";
-// import UserRegister from "./pages/UserRegister";
-import { Routes, Route } from "react-router-dom";
-// import { User } from "lucide-react";
+import Dashboard from "./pages/Dashboard";
+import ProfileSetup from "./pages/ProfileSetup";
+import UserLogin from "./pages/UserLogin";
+import UserProfilePage from "./pages/UserProfilePage";
+
+// Context & Components
+import AppContext from "./context/AppContext";
+import Navbar from "./components/Navbar";
+import ProtectedRoute from "./context/ProtectedRoute";
 
 function App() {
+  const { userData } = useContext(AppContext);
+  const location = useLocation();
+
+  // Hide Navbar on login and homepage
+  const hideNavbar = ["/", "/login"].includes(location.pathname);
+
   return (
     <>
-      {/* <Navbar userName={"User"} /> */}
+      {/* Show Navbar only if not on home or login */}
+      {!hideNavbar && <Navbar userName={userData?.name || "User"} />}
+
+      <ToastContainer position="top-right" autoClose={3000} />
+
       <Routes>
+        {/* Public Routes */}
         <Route path="/" element={<HomePage />} />
-        <Route path="/register" element={<UserRegister />} />
         <Route path="/login" element={<UserLogin />} />
-        <Route path="/dashboard/:id" element={<Dashboard />} />
-        <Route path="/user/:id" element={<User />} />
+        <Route path="/complete-profile" element={<ProfileSetup />} />
+
+        {/* Protected Routes */}
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/user/:id"
+          element={
+            <ProtectedRoute>
+              <UserProfilePage />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </>
   );

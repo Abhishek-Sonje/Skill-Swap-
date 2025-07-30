@@ -1,233 +1,169 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import "../styles/UserLogin.css";
+import AppContext from "../context/AppContext.jsx";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
-const UserLogin = () => {
+export default function Login() {
+  const navigate = useNavigate();
+  const { backendUrl, setIsLoggedin, setUserData, userData } =
+    useContext(AppContext);
+
+  const [isLogin, setIsLogin] = useState(true);
   const [formData, setFormData] = useState({
+    username: "",
     email: "",
     password: "",
   });
 
-  const [errors, setErrors] = useState({});
-  const [showPassword, setShowPassword] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitMessage, setSubmitMessage] = useState("");
-  const [focusedField, setFocusedField] = useState("");
-
-  // Mock user credentials for demonstration
-  const mockUsers = [
-    { email: "john@example.com", password: "password123" },
-    { email: "jane@skillswap.com", password: "mypassword" },
-    { email: "demo@demo.com", password: "demo1234" },
-  ];
-
-  const validateForm = () => {
-    const newErrors = {};
-
-    // Email validation
-    if (!formData.email.trim()) {
-      newErrors.email = "Email is required";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = "Please enter a valid email address";
-    }
-
-    // Password validation
-    if (!formData.password) {
-      newErrors.password = "Password is required";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-
-    // Clear specific error when user starts typing
-    if (errors[name]) {
-      setErrors((prev) => ({
-        ...prev,
-        [name]: "",
-      }));
-    }
-
-    // Clear general error message
-    if (submitMessage && !submitMessage.includes("successful")) {
-      setSubmitMessage("");
-    }
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    if (!validateForm()) {
-      return;
-    }
-
-    setIsSubmitting(true);
-    setSubmitMessage("");
-
     try {
-      // Simulate API call delay
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      e.preventDefault();
+      axios.defaults.withCredentials = true;
+      if (isLogin) {
+        const { data } = await axios.post(
+          `${backendUrl}/api/auth/login`,
+          {
+            email: formData.email,
+            password: formData.password,
+          },
+          { withCredentials: true }
+        );
+        // await myInfo(); // Fetch user info after login
+        console.log("Login successful:", data.user);
 
-      // Check credentials against mock users
-      const user = mockUsers.find(
-        (u) =>
-          u.email.toLowerCase() === formData.email.toLowerCase() &&
-          u.password === formData.password
-      );
+        if (data.success) {
+          setIsLoggedin(true);
+          setUserData(data.user);
+          toast.success("Login successful!");
+          if (!data.user.completed_profile) {
+            navigate("/complete-profile");
+          }
+          else {
+            navigate(`/dashboard`);
+          }
 
-      if (user) {
-        setSubmitMessage("Login successful! Welcome back to Skill Swap!");
-        console.log("Login successful for:", formData.email);
-
-        // Reset form after successful login
-        setTimeout(() => {
-          setFormData({ email: "", password: "" });
-          setSubmitMessage("");
-        }, 3000);
+        } else {
+          toast.error("Login failed!", data.message);
+        }
       } else {
-        setSubmitMessage("Invalid email or password. Please try again.");
+        console.log("Signup attempt:", formData);
+        const { data } = await axios.post(
+          `${backendUrl}/api/auth/signup`,
+          {
+            name: formData.username,
+            email: formData.email,
+            password: formData.password,
+          },
+          { withCredentials: true }
+        );
+
+        if (data.success) {
+          setIsLoggedin(true);
+          setUserData(data.user);
+          toast.success("Account created successfully!");
+          if (!data.user.completed_profile) {
+            navigate("/complete-profile");
+          }
+          else {
+            navigate(`/dashboard`);
+          }
+
+        } else {
+          console.error("Signup failed:", data.message);
+          toast.error("Signup failed!", data.message);
+        }
       }
     } catch (error) {
-      setSubmitMessage("Login failed. Please try again later.",error);
-    } finally {
-      setIsSubmitting(false);
+      const message =
+        error.response?.data?.message || "An error occurred. Please try again.";
+      console.error("Error during authentication:", message);
+      toast.error(message);
+      setIsLoggedin(false);
     }
   };
 
+  const toggleForm = () => {
+    setIsLogin(!isLogin);
+    setFormData({ username: "", email: "", password: "" });
+  };
+
   return (
-    <div className="login-container">
-      <div className="background-pattern"></div>
-      <div className="login-card">
-        <div className="header">
-          <div className="logo-container">
-            <div className="logo-glow"></div>
-            <div className="logo">SS</div>
-          </div>
-          <h1 className="title">Welcome Back</h1>
-          <p className="subtitle">Sign in to your Skill Swap account</p>
+    <div className="auth-container">
+      <div className="auth-card">
+        <div className="auth-header">
+          <h1 className="auth-logo">Skill Swap</h1>
+          <p className="auth-subtitle">
+            {isLogin
+              ? "Welcome back! Sign in to your account"
+              : "Join our community of skill sharers"}
+          </p>
         </div>
 
-        {/* Demo Credentials */}
-        <div className="demo-credentials">
-          <div className="demo-title">✨ Demo Credentials</div>
-          <div>
-            <strong>Email:</strong> demo@demo.com
-          </div>
-          <div>
-            <strong>Password:</strong> demo1234
-          </div>
-        </div>
+        <form className="auth-form" onSubmit={handleSubmit}>
+          {!isLogin && (
+            <div className="input-group">
+              <label className="input-label">Username</label>
+              <input
+                type="text"
+                name="username"
+                value={formData.username}
+                onChange={handleInputChange}
+                className="auth-input"
+                placeholder="Enter your username"
+                required
+              />
+            </div>
+          )}
 
-        {/* Success/Error Message */}
-        {submitMessage && (
-          <div
-            className={`message ${
-              submitMessage.includes("successful") ? "success" : "error"
-            }`}
-          >
-            {submitMessage}
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit}>
-          {/* Email Field */}
-          <div className="form-group">
-            <label className="form-label" htmlFor="email">
-              Email Address
-            </label>
+          <div className="input-group">
+            <label className="input-label">Email</label>
             <input
               type="email"
-              id="email"
               name="email"
               value={formData.email}
               onChange={handleInputChange}
-              onFocus={() => setFocusedField("email")}
-              onBlur={() => setFocusedField("")}
-              className={`form-input ${errors.email ? "error" : ""} ${
-                focusedField === "email" ? "focused" : ""
-              }`}
+              className="auth-input"
               placeholder="Enter your email"
-              autoComplete="email"
+              required
             />
-            {errors.email && (
-              <div className="error-message">⚠️ {errors.email}</div>
-            )}
           </div>
 
-          {/* Password Field */}
-          <div className="form-group">
-            <label className="form-label" htmlFor="password">
-              Password
-            </label>
-            <div className="password-container">
-              <input
-                type={showPassword ? "text" : "password"}
-                id="password"
-                name="password"
-                value={formData.password}
-                onChange={handleInputChange}
-                onFocus={() => setFocusedField("password")}
-                onBlur={() => setFocusedField("")}
-                className={`form-input ${errors.password ? "error" : ""} ${
-                  focusedField === "password" ? "focused" : ""
-                }`}
-                placeholder="Enter your password"
-                autoComplete="current-password"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="password-toggle"
-                aria-label={showPassword ? "Hide password" : "Show password"}
-              >
-                {showPassword ? "🙈" : "👁️"}
-              </button>
-            </div>
-            {errors.password && (
-              <div className="error-message">⚠️ {errors.password}</div>
-            )}
+          <div className="input-group">
+            <label className="input-label">Password</label>
+            <input
+              type="password"
+              name="password"
+              value={formData.password}
+              onChange={handleInputChange}
+              className="auth-input"
+              placeholder="Enter your password"
+              required
+            />
           </div>
 
-          {/* Forgot Password */}
-          <div className="forgot-password-container">
-            <a href="#" className="forgot-password">
-              Forgot your password? →
-            </a>
-          </div>
-
-          {/* Submit Button */}
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className={`submit-btn ${isSubmitting ? "loading" : ""}`}
-          >
-            {isSubmitting ? "🔄 Signing In..." : "🚀 Sign In"}
+          <button type="submit" className="submit-button">
+            {isLogin ? "Sign In" : "Create Account"}
           </button>
-
-          {/* Divider */}
-          <div className="divider">
-            <div className="divider-line"></div>
-            <span className="divider-text">or</span>
-            <div className="divider-line"></div>
-          </div>
-
-          {/* Sign Up Link */}
-          <div className="signup-link">
-            New to Skill Swap?{" "}
-            <a href="/register" className="signup-link-text">
-              Create your account →
-            </a>
-          </div>
         </form>
+
+        <div className="toggle-section">
+          <p className="toggle-text">
+            {isLogin ? "Don't have an account? " : "Already have an account? "}
+            <span onClick={toggleForm} className="toggle-link">
+              {isLogin ? "Sign up here" : "Sign in here"}
+            </span>
+          </p>
+        </div>
       </div>
     </div>
   );
-};
-
-export default UserLogin;
+}

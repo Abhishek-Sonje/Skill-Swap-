@@ -14,7 +14,12 @@ const PORT = 5000;
 const MONGO_URI = "mongodb://localhost:27017/SkillSwap";
 
 // Middleware
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:5173", // 👈 frontend origin
+    credentials: true, // 👈 allow credentials (cookies)
+  })
+);
 app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(express.json());

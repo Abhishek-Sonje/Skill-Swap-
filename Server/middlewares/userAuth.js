@@ -1,28 +1,31 @@
-const jwt=require("jsonwebtoken");
+const jwt = require("jsonwebtoken");
 
 const userAuth = async (req, res, next) => {
+  // console.log("cookies:", req.cookies);
   const { token } = req.cookies;
 
-    if (!token) {
-       
-    return res.status(401).json({ message: "Unauthorized" });
+  if (!token) {
+    return res
+      .status(401)
+      .json({ success: false, message: "Unauthorized - No token" });
   }
 
   try {
-    const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    if (decodedToken.id) {
-      req.body.userId = decodedToken.id;
-    } else {
-      return res.status(401).json({ message: "Unauthorized" });
+    if (!decoded?.id) {
+      return res
+        .status(401)
+        .json({ success: false, message: "Unauthorized - Invalid token" });
     }
+
+    req.user = decoded; // ✅ Attach decoded user (e.g. { id, email }) to req
     next();
   } catch (error) {
     return res
       .status(500)
-      .json({ message: "Server error", error: error.message });
+      .json({ success: false, message: "Server error", error: error.message });
   }
-
 };
 
-module.exports =  userAuth ;
+module.exports = userAuth;

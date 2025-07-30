@@ -1,9 +1,16 @@
-import React, { useEffect, useState, useMemo, useCallback } from "react";
-import { useParams } from "react-router-dom";
+import React, {
+  useEffect,
+  useState,
+  useMemo,
+  useCallback,
+  useContext,
+} from "react";
 import axios from "axios";
 import { ScaleLoader } from "react-spinners";
-import "../styles/Dashboard.css";
 import UserCard from "../components/card";
+import AppContext from "../context/AppContext.jsx";
+import { Users, BookOpen, Zap, Target, Filter, Sparkles } from "lucide-react";
+import "../styles/Dashboard.css";
 
 function Dashboard() {
   const [matches, setMatches] = useState([]);
@@ -11,7 +18,8 @@ function Dashboard() {
   const [error, setError] = useState(null);
   const [filter, setFilter] = useState("all");
   const [currentHero, setCurrentHero] = useState(0);
-  const { id } = useParams();
+  const { userData } = useContext(AppContext);
+  const id = userData?._id;
 
   const heroMessages = useMemo(
     () => [
@@ -28,7 +36,8 @@ function Dashboard() {
       setLoading(true);
       setError(null);
       const response = await axios.get(
-        `http://localhost:5000/api/users/match/${id}`
+        `http://localhost:5000/api/users/match/${id}`,
+        { withCredentials: true }
       );
       if (!Array.isArray(response.data)) {
         throw new Error("Invalid data format received from the server.");
@@ -45,8 +54,13 @@ function Dashboard() {
   }, [id]);
 
   useEffect(() => {
-    fetchMatches();
-  }, [fetchMatches]);
+    if (id) {
+      fetchMatches();
+    } else {
+      setError("User ID is not available. Please log in.");
+      setLoading(false);
+    }
+  }, [fetchMatches, id]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -55,7 +69,6 @@ function Dashboard() {
     return () => clearInterval(interval);
   }, [heroMessages]);
 
-  // Memoize role counts
   const roleCounts = useMemo(
     () => ({
       total: matches.length,
@@ -65,7 +78,6 @@ function Dashboard() {
     [matches]
   );
 
-  // Filter matches
   const filteredMatches = useMemo(
     () =>
       matches.filter(
@@ -82,25 +94,36 @@ function Dashboard() {
 
   if (loading) {
     return (
-      <div className="dashboard-loading">
-        <ScaleLoader height={45} margin={5} radius={7} width={6} />
-        <p className="loading-text">Loading your matches...</p>
+      <div className="dashboard-container">
+        <div className="dashboard-loading">
+          <ScaleLoader
+            height={45}
+            margin={5}
+            radius={7}
+            width={6}
+            color="#667eea"
+          />
+          <p className="dashboard-loading-text">Loading your matches...</p>
+        </div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="dashboard-error">
-        {error}
-        <button
-          className="retry-button"
-          onClick={handleRetry}
-          role="button"
-          aria-label="Retry loading matches"
-        >
-          Retry
-        </button>
+      <div className="dashboard-container">
+        <div className="dashboard-error-outer">
+          <div className="dashboard-error">
+            <div className="dashboard-error-icon">⚠️</div>
+            <h3 className="dashboard-error-title">
+              Oops! Something went wrong
+            </h3>
+            <p className="dashboard-error-desc">{error}</p>
+            <button className="retry-btn" onClick={handleRetry}>
+              Try Again
+            </button>
+          </div>
+        </div>
       </div>
     );
   }
@@ -108,54 +131,67 @@ function Dashboard() {
   return (
     <div className="dashboard-container">
       {/* Hero Section */}
-      <section className="hero-section">
-        <div className="hero-background"></div>
+      <section className="dashboard-hero">
         <div className="floating-elements">
-          <div className="floating-element floating-1"></div>
-          <div className="floating-element floating-2"></div>
-          <div className="floating-element floating-3"></div>
-          <div className="floating-element floating-4"></div>
+          {[...Array(4)].map((_, i) => (
+            <div
+              key={i}
+              className={`dashboard-floater floater${i}`}
+              style={{
+                top: `${20 + i * 20}%`,
+                left: `${10 + i * 20}%`,
+                animationDelay: `${i * 0.5}s`,
+                animationDuration: `${4 + i}s`,
+              }}
+            />
+          ))}
         </div>
-        <div className="hero-content">
-          <h1 className="hero-title">SkillSwap</h1>
-          <p className="hero-subtitle">{heroMessages[currentHero]}</p>
-          <div className="hero-stats">
-            <div className="hero-stat">
-              <span className="hero-stat-number">{roleCounts.total}</span>
-              <span className="hero-stat-label">Matches</span>
+
+        <div className="dashboard-hero-content">
+          <h1 className="dashboard-hero-title">
+            <Sparkles className="dashboard-hero-icon" />
+            Welcome to SkillSwap
+          </h1>
+          <p className="dashboard-hero-subtitle">{heroMessages[currentHero]}</p>
+
+          <div className="dashboard-stats">
+            <div className="dashboard-stat-card">
+              <Users size={32} className="dashboard-stat-icon" />
+              <span className="dashboard-stat-num">{roleCounts.total}</span>
+              <span className="dashboard-stat-label">Total Matches</span>
             </div>
-            <div className="hero-stat">
-              <span className="hero-stat-number">{roleCounts.teachers}</span>
-              <span className="hero-stat-label">Teachers</span>
+            <div className="dashboard-stat-card">
+              <BookOpen size={32} className="dashboard-stat-icon" />
+              <span className="dashboard-stat-num">{roleCounts.teachers}</span>
+              <span className="dashboard-stat-label">Teachers</span>
             </div>
-            <div className="hero-stat">
-              <span className="hero-stat-number">{roleCounts.mentors}</span>
-              <span className="hero-stat-label">Mentors</span>
+            <div className="dashboard-stat-card">
+              <Zap size={32} className="dashboard-stat-icon" />
+              <span className="dashboard-stat-num">{roleCounts.mentors}</span>
+              <span className="dashboard-stat-label">Mentors</span>
             </div>
           </div>
         </div>
       </section>
 
       {/* Main Content */}
-      <main className="main-content">
-        <h2 className="section-title">Your Skill Swap Matches</h2>
-        <p className="section-subtitle">
-          Connect with users to teach and learn new skills
+      <main className="dashboard-main">
+        <h2 className="dashboard-section-title">Your Skill Swap Matches</h2>
+        <p className="dashboard-section-subtitle">
+          Connect with amazing people to teach and learn new skills
         </p>
-        <div className="filter-section">
-          <div className="filter-buttons">
+
+        <div className="dashboard-filter-section">
+          <div className="dashboard-filter-btns">
             {["all", "teacher", "learner", "both"].map((filterType) => (
               <button
                 key={filterType}
-                className={`filter-button ${
-                  filter === filterType
-                    ? "filter-button-active"
-                    : "filter-button-inactive"
+                className={`filter-btn${
+                  filter === filterType ? " active" : ""
                 }`}
                 onClick={() => setFilter(filterType)}
-                role="button"
-                aria-label={`Filter by ${filterType} profiles`}
               >
+                <Filter size={16} style={{ marginRight: "0.5rem" }} />
                 {filterType === "all"
                   ? "All Profiles"
                   : filterType === "both"
@@ -167,6 +203,7 @@ function Dashboard() {
             ))}
           </div>
         </div>
+
         {filteredMatches.length > 0 ? (
           <div className="dashboard-grid">
             {filteredMatches.map((match) => (
@@ -174,17 +211,16 @@ function Dashboard() {
             ))}
           </div>
         ) : (
-          <div className="empty-state">
-            <div
-              className="empty-state-icon"
-              role="img"
-              aria-label="No Matches"
-            >
-              🎯
-            </div>
-            <h3 className="empty-state-title">No matches found</h3>
-            <p className="empty-state-text">
-              Try adjusting your skills in your profile to find better matches.
+          <div className="dashboard-empty-state">
+            <Target
+              size={64}
+              color="#667eea"
+              style={{ marginBottom: "1.5rem" }}
+            />
+            <h3 className="dashboard-empty-title">No matches found</h3>
+            <p className="dashboard-empty-desc">
+              Try adjusting your skills in your profile to find better matches,
+              or check back later for new connections.
             </p>
           </div>
         )}
