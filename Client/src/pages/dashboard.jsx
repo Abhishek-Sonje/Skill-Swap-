@@ -18,7 +18,7 @@ function Dashboard() {
   const [error, setError] = useState(null);
   const [filter, setFilter] = useState("all");
   const [currentHero, setCurrentHero] = useState(0);
-  const { userData } = useContext(AppContext);
+  const { userData,backendUrl } = useContext(AppContext);
   const id = userData?._id;
 
   const heroMessages = useMemo(
@@ -36,7 +36,7 @@ function Dashboard() {
       setLoading(true);
       setError(null);
       const response = await axios.get(
-        `http://localhost:5000/api/users/match/${id}`,
+        `${backendUrl}/api/users/match/${id}`,
         { withCredentials: true }
       );
       if (!Array.isArray(response.data)) {
