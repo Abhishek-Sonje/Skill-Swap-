@@ -14,6 +14,7 @@ import UserProfilePage from "./pages/UserProfilePage";
 import AppContext from "./context/AppContext";
 import Navbar from "./components/Navbar";
 import ProtectedRoute from "./context/ProtectedRoute";
+import ChatPage from "./components/ChatPage";
 
 function App() {
   const { userData } = useContext(AppContext);
@@ -52,6 +53,7 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route path="/chat" element={<ChatPage/>} />
       </Routes>
     </>
   );
