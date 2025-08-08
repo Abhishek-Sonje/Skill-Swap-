@@ -47,7 +47,7 @@ const UserProfilePage = () => {
   }, [id,backendUrl]);
 
   const handleContact = () => {
-    navigate("/chat");
+    navigate(`/chat/${id}`);
   };
   const onBack = () => {
     navigate(-1);

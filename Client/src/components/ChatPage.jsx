@@ -1,194 +1,190 @@
-import React, { useState, useEffect } from "react";
-import "./ChatPage.css";
 import socket from "../socket";
+import { useParams,useNavigate } from "react-router-dom";
+import AppContext from "../context/AppContext";
+import { useContext, useState, useEffect } from "react";
+import axios from "axios";
 
 const ChatPage = () => {
-  const [inputValue, setInputValue] = useState("");
-  //   const [isTyping, setIsTyping] = useState(false);
-  //   const messagesEndRef = useRef(null);
-  //   const inputRef = useRef(null);
-  const [messages, setMessages] = useState([]);
+  const navigate = useNavigate();
+  const { userData, backendUrl } = useContext(AppContext);
+  console.log("User Data:", userData);
+  const { _id } = userData || {};
+  console.log("User ID:", _id);
+  console.log("Socket ID:", socket.id);
+  const { receiverId } = useParams();
+
+  const [roomId, setRoomId] = useState("");
+  const [message, setMessage] = useState("");
+  const [chat, setChat] = useState([]);
 
   useEffect(() => {
-    socket.on("connect", () => {
-      console.log("Connected to server with ID:", socket.id);
+    const fetchMessage = async () => {
+      const res = await axios.get(
+        `${backendUrl}/api/chat/${_id}/${receiverId}`
+      );
+      setChat(
+        res.data.map((m) => ({
+          message: m.message,
+          sender: m.sender,
+          receiver: m.receiverId,
+        }))
+      );
+    };
+
+    fetchMessage();
+
+    socket.emit("registerUser", { userId: _id });
+
+    socket.emit("joinPrivateRoom", { fromUserId: _id, toUserId: receiverId });
+
+    socket.on("chatInitialized", ({ roomId }) => {
+      setRoomId(roomId);
+      console.log("Chat initialized in room:", roomId);
     });
 
-    socket.on("receiveMessage", (message) => {
-      setMessages((prevMessages) => [...prevMessages, message]);
+    // Receive private messages
+    socket.on("privateMessage", ({ message, sender }) => {
+      setChat((prevChat) => [...prevChat, { message, sender }]);
+      console.log("New message received:", message, "from", sender);
     });
 
     return () => {
-      socket.off("receiveMessage");
-      socket.disconnect();
+      socket.off("chatInitialized");
+      socket.off("privateMessage");
     };
-  }, []);
-  //   return <div>Chat is initialize</div>;
+  }, [_id, receiverId, backendUrl]);
 
-  //   const scrollToBottom = () => {
-  //     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  //   };
-
-  //   useEffect(() => {
-  //     scrollToBottom();
-  //   }, [messages]);
-
-  const handleSend = () => {
-    if (inputValue.trim()) {
-      const newMessage = {
-        id: messages.length + 1,
-        text: inputValue,
-        sender: socket.id,
-        // timestamp: new Date(),
-      };
-      socket.emit("sendMessage", newMessage);
-      setMessages([...messages, newMessage]);
-      setInputValue("");
+  const sendMessage = () => {
+    if (message.trim() && roomId) {
+      socket.emit("privateMessage", {
+        roomId,
+        message,
+        sender: _id,
+        receiver: receiverId,
+      });
+      setMessage("");
     }
-  };
-
-  const handleKeyPress = (e) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      handleSend();
-    }
-  };
-
-  //   const formatTime = (timestamp) => {
-  //     return timestamp.toLocaleTimeString([], {
-  //       hour: "2-digit",
-  //       minute: "2-digit",
-  //     });
-  //   };
-
-  const getSkillColor = (skill) => {
-    const colors = {
-      "Python Developer": "linear-gradient(135deg, #3776ab 0%, #ffd43b 100%)",
-      "React Developer": "linear-gradient(135deg, #61dafb 0%, #21232a 100%)",
-      default: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-    };
-    return colors[skill] || colors.default;
   };
 
   return (
-    <div className="chat-root">
-      {/* Background floating elements */}
-      <div className="bg-circle circle1" />
-      <div className="bg-circle circle2" />
+   
+  
+    <div
+      style={{
+        maxWidth: "600px",
+        margin: "40px auto",
+        marginTop: "80px",
+        background: "#fff",
+        borderRadius: "12px",
+        boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+        overflow: "hidden",
+        display: "flex",
+        flexDirection: "column",
+        height: "80vh",
+      }}
+    >
+      {/* Header */}
+      <div
+        style={{
+          background: "#4a90e2",
+          color: "#fff",
+          padding: "15px 20px",
+          fontSize: "18px",
+          fontWeight: "bold",
+          display: "flex",
+          alignItems: "center",
+        }}
+      >
+        <button
+          onClick={() => navigate(-1)}
+          style={{
+            marginRight: "16px",
+            background: "transparent",
+            border: "none",
+            color: "#fff",
+            fontSize: "20px",
+            cursor: "pointer",
+            padding: 0,
+          }}
+          aria-label="Back"
+        >
+          &#8592;
+        </button>
+        Private Chat
+      </div>
 
-      <div className="chat-container">
-        {/* Header */}
-        <div className="chat-header">
-          <div className="chat-header-icon">💬</div>
-          <div className="chat-header-texts">
-            <h2 className="chat-title">SkillSwap Chat</h2>
-            <p className="chat-subtitle">Connect • Learn • Grow Together</p>
-          </div>
-          <div className="chat-active-swappers">3 Active Swappers</div>
-        </div>
-
-        {/* Messages Container */}
-        <div className="chat-messages">
-          {messages.map((message, index) => (
-            <div
-              key={message.id}
-              className={`chat-message-row ${
-                message.sender === socket.id ? "from-me" : "from-other"
-              }`}
-              style={{ animationDelay: `${index * 0.1}s` }}
-            >
-              <div className="chat-message-content-wrapper">
-                {message.sender !== socket.id && (
-                  <div className="chat-user-info">
-                    <div
-                      className="chat-avatar"
-                      style={{ background: getSkillColor(message.skill) }}
-                      aria-label={`Avatar for ${message.user || "User"}`}
-                    >
-                      {message.user?.charAt(0) || "U"}
-                    </div>
-                    <div className="chat-user-details">
-                      <div className="chat-user-name">
-                        {message.user || "User"}
-                      </div>
-                      <div className="chat-user-skill">
-                        {message.skill || "Skill Swapper"}
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                <div
-                  className={`chat-bubble ${
-                    message.sender === socket.id ? "me-bubble" : "other-bubble"
-                  }`}
-                  tabIndex={0}
-                >
-                  <div>{message.text}</div>
-                  {/* <div className="chat-timestamp">
-                      {formatTime(message.timestamp)}
-                    </div> */}
-                </div>
-              </div>
-            </div>
-          ))}
-
-          {/* {isTyping && (
-              <div
-                className="chat-message-row from-other"
-                style={{ animationDelay: "0s" }}
-              >
-                <div className="chat-message-content-wrapper">
-                  <div className="chat-user-info">
-                    <div
-                      className="chat-avatar python-avatar"
-                      aria-label="Avatar for Sarah"
-                    >
-                      S
-                    </div>
-                    <div className="chat-user-details">
-                      <div className="chat-user-name">Sarah</div>
-                      <div className="chat-user-skill">Python Developer</div>
-                    </div>
-                  </div>
-
-                  <div
-                    className="chat-bubble other-bubble typing-bubble"
-                    tabIndex={0}
-                  >
-                    <div className="typing-indicator">
-                      {[0, 1, 2].map((i) => (
-                        <div key={i} className={`dot dot-${i}`} />
-                      ))}
-                    </div>
-                    <span className="typing-text">Sarah is typing...</span>
-                  </div>
-                </div>
-              </div>
-            )} */}
-          {/* <div ref={messagesEndRef} /> */}
-        </div>
-
-        {/* Input Area */}
-        <div className="chat-input-area">
-          <textarea
-            //   ref={inputRef}
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            onKeyDown={handleKeyPress}
-            placeholder="Share your skills, ask questions, connect with fellow learners..."
-            className="chat-textarea"
-          />
-          <button
-            onClick={handleSend}
-            disabled={!inputValue.trim()}
-            className={`chat-send-button ${
-              inputValue.trim() ? "enabled" : "disabled"
-            }`}
+      {/* Chat Messages */}
+      <div
+        style={{
+          flex: 1,
+          padding: "15px",
+          overflowY: "auto",
+          background: "#f7f7f7",
+        }}
+      >
+        {chat.map((msg, idx) => (
+          <div
+            key={idx}
+            style={{
+              display: "flex",
+              justifyContent: msg.sender === _id ? "flex-end" : "flex-start",
+              marginBottom: "10px",
+            }}
           >
-            Send
-          </button>
-        </div>
+            <div
+              style={{
+                background: msg.sender === _id ? "#4a90e2" : "#e5e5ea",
+                color: msg.sender === _id ? "#fff" : "#000",
+                padding: "10px 14px",
+                borderRadius: "18px",
+                maxWidth: "70%",
+                wordWrap: "break-word",
+              }}
+            >
+              {msg.message}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Input Section */}
+      <div
+        style={{
+          display: "flex",
+          padding: "10px",
+          borderTop: "1px solid #ddd",
+          background: "#fff",
+        }}
+      >
+        <input
+          type="text"
+          value={message}
+          placeholder="Type your message..."
+          onChange={(e) => setMessage(e.target.value)}
+          style={{
+            flex: 1,
+            padding: "12px",
+            border: "1px solid #ddd",
+            borderRadius: "20px",
+            outline: "none",
+            fontSize: "14px",
+          }}
+        />
+        <button
+          onClick={sendMessage}
+          style={{
+            marginLeft: "10px",
+            padding: "12px 20px",
+            background: "#4a90e2",
+            color: "#fff",
+            border: "none",
+            borderRadius: "20px",
+            cursor: "pointer",
+            fontWeight: "bold",
+          }}
+        >
+          Send
+        </button>
       </div>
     </div>
   );

@@ -53,7 +53,7 @@ function App() {
             </ProtectedRoute>
           }
         />
-        <Route path="/chat" element={<ChatPage/>} />
+        <Route path="/chat/:receiverId" element={<ChatPage/>} />
       </Routes>
     </>
   );

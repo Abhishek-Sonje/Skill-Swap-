@@ -7,8 +7,12 @@ const cookieParser = require("cookie-parser");
 const { Server } = require("socket.io");
 require("dotenv").config();
 
+const Chat = require("./models/message.js");
+
 const userRoutes = require("./routes/userRoutes.js");
 const authRoutes = require("./routes/authRoutes.js");
+const chatRoutes = require("./routes/chatRoutes.js");
+
 const { copyFileSync } = require("fs");
 
 const app = express();
@@ -23,18 +27,59 @@ const io = new Server(server, {
     credentials: true, // 👈 allow credentials (cookies )
   },
 });
-io.on("connection", (socket) => {
-  console.log("🟢 client is connected", socket.id);
+const userSocketMap = {}; // Track which user is connected to which socket
 
-  socket.on("disconnect", () => {
-    console.log("🔴 client is disconnected", socket.id);
+// Socket.IO Logic
+io.on("connection", (socket) => {
+  console.log("🟢 client connected:", socket.id);
+
+  // Register the connected user
+  socket.on("registerUser", ({ userId }) => {
+    userSocketMap[userId] = socket.id;
+    console.log(`✅ Registered user ${userId} with socket ${socket.id}`);
   });
 
-  socket.on("sendMessage", (data) => {
-    io.emit("receiveMessage", data);
+  // Join a private room with another user
+  socket.on("joinPrivateRoom", ({ fromUserId, toUserId }) => {
+    const roomId = [fromUserId, toUserId].sort().join("-");
+    socket.join(roomId);
+
+    const toSocketId = userSocketMap[toUserId];
+    if (toSocketId) {
+      io.sockets.sockets.get(toSocketId)?.join(roomId);
+    }
+
+    socket.emit("chatInitialized", { roomId });
+    // io.to(roomId).emit("chatInitialized", { roomId });
+  });
+
+  // Send private messages
+  socket.on("privateMessage", async ({ roomId, message, sender, receiver }) => {
+    const newMessage = new Chat({
+       sender,
+      receiver,
+      message,
+    });
+    try {
+      await newMessage.save();
+      io.to(roomId).emit("privateMessage", { message, sender, receiver });
+    } catch (err) {
+      console.error("Failed to save message:", err);
+      socket.emit("errorMessage", { error: "Message could not be saved" });
+    }
+  });
+
+  // On disconnect
+  socket.on("disconnect", () => {
+    console.log("🔴 client disconnected:", socket.id);
+    for (const userId in userSocketMap) {
+      if (userSocketMap[userId] === socket.id) {
+        delete userSocketMap[userId];
+        break;
+      }
+    }
   });
 });
-
 
 // Middleware
 app.use(
@@ -51,12 +96,12 @@ app.use(express.urlencoded({ extended: true }));
 //API Endpoints
 app.use("/api/users", userRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/chat", chatRoutes);
 
 // Default route
 app.get("/", (req, res) => {
   res.send("✅ API is working!");
 });
-
 
 // Async MongoDB connection and server start
 const startServer = async () => {
