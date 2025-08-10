@@ -6,6 +6,7 @@ const mongoose = require("mongoose");
 const cookieParser = require("cookie-parser");
 const { Server } = require("socket.io");
 require("dotenv").config();
+const path = require("path"); // Added for serving static files in production
 
 const Chat = require("./models/message.js");
 
@@ -16,14 +17,15 @@ const chatRoutes = require("./routes/chatRoutes.js");
 const { copyFileSync } = require("fs");
 
 const app = express();
-const PORT = 5000;
-const MONGO_URI = "mongodb://localhost:27017/SkillSwap";
+const PORT = process.env.PORT || 5000;
+const MONGO_URI = process.env.MONGO_URI || "mongodb://localhost:27017/SkillSwap";
+const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173";
 
 // Chat App
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:5173", // 👈 frontend origin
+    origin: FRONTEND_URL, // 👈 frontend origin from environment
     credentials: true, // 👈 allow credentials (cookies )
   },
 });
@@ -84,7 +86,7 @@ io.on("connection", (socket) => {
 // Middleware
 app.use(
   cors({
-    origin: "http://localhost:5173", // 👈 frontend origin
+    origin: FRONTEND_URL, // 👈 frontend origin from environment
     credentials: true, // 👈 allow credentials (cookies)
   })
 );
@@ -102,6 +104,16 @@ app.use("/api/chat", chatRoutes);
 app.get("/", (req, res) => {
   res.send("✅ API is working!");
 });
+
+// Serve static files from the React app build folder in production
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname, "../Client/dist")));
+  
+  // Handle React routing, return all requests to React app
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "../Client/dist", "index.html"));
+  });
+}
 
 // Async MongoDB connection and server start
 const startServer = async () => {
