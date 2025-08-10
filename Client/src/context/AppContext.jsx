@@ -1,5 +1,6 @@
 import { createContext, useState, useEffect } from "react";
 import axios from "axios";
+import { config } from "../config";
 
 const AppContext = createContext();
 
@@ -8,7 +9,8 @@ export const AppContextProvider = ({ children }) => {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true); // ✅ New loading state
 
-  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+  // Use centralized configuration
+  const backendUrl = config.API_URL;
 
   useEffect(() => {
     const fetchUserInfo = async () => {

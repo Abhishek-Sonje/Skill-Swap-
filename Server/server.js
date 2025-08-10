@@ -6,15 +6,12 @@ const mongoose = require("mongoose");
 const cookieParser = require("cookie-parser");
 const { Server } = require("socket.io");
 require("dotenv").config();
-const path = require("path"); // Added for serving static files in production
 
 const Chat = require("./models/message.js");
 
 const userRoutes = require("./routes/userRoutes.js");
 const authRoutes = require("./routes/authRoutes.js");
 const chatRoutes = require("./routes/chatRoutes.js");
-
-const { copyFileSync } = require("fs");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -128,17 +125,8 @@ app._router.stack.forEach((middleware) => {
   }
 });
 
-// Serve static files from the React app build folder in production
-if (process.env.NODE_ENV === "production") {
-  // Serve static files
-  app.use(express.static(path.join(__dirname, "../Client/dist")));
-  
-  // Handle React routing, return all requests to React app
-  // This must be the LAST route to avoid conflicts with API routes
-  app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "../Client/dist", "index.html"));
-  });
-}
+// Note: Static file serving removed since frontend is deployed separately on Vercel
+// and Render only deploys the backend server
 
 // Error handling middleware
 app.use((err, req, res, next) => {

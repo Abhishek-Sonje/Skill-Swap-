@@ -1,7 +1,7 @@
 import {io} from "socket.io-client";
+import { config } from "./config";
 
-const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
-
-const socket = io(backendUrl, { withCredentials: true });
+// Use centralized configuration
+const socket = io(config.SOCKET_URL, { withCredentials: true });
 
 export default socket;
