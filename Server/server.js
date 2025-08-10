@@ -95,7 +95,7 @@ app.use(bodyParser.json());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-//API Endpoints
+// API Endpoints - Register these BEFORE any catch-all routes
 app.use("/api/users", userRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/chat", chatRoutes);
@@ -114,19 +114,56 @@ app.get("/", (req, res) => {
   res.send("✅ API is working!");
 });
 
+// Debug: Log all registered routes
+console.log("🔍 Registered routes:");
+app._router.stack.forEach((middleware) => {
+  if (middleware.route) {
+    console.log(`  ${Object.keys(middleware.route.methods).join(',')} ${middleware.route.path}`);
+  } else if (middleware.name === 'router') {
+    middleware.handle.stack.forEach((handler) => {
+      if (handler.route) {
+        console.log(`  ${Object.keys(handler.route.methods).join(',')} ${middleware.regexp.source.replace('^\\/','').replace('\\/?(?=\\/|$)','')}${handler.route.path}`);
+      }
+    });
+  }
+});
+
 // Serve static files from the React app build folder in production
 if (process.env.NODE_ENV === "production") {
+  // Serve static files
   app.use(express.static(path.join(__dirname, "../Client/dist")));
   
   // Handle React routing, return all requests to React app
+  // This must be the LAST route to avoid conflicts with API routes
   app.get("*", (req, res) => {
     res.sendFile(path.join(__dirname, "../Client/dist", "index.html"));
   });
 }
 
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error('Error:', err);
+  res.status(500).json({ 
+    error: 'Internal Server Error',
+    message: err.message,
+    stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
+  });
+});
+
+// 404 handler for unmatched routes
+app.use((req, res) => {
+  res.status(404).json({ error: 'Route not found' });
+});
+
 // Async MongoDB connection and server start
 const startServer = async () => {
   try {
+    console.log("🚀 Starting Skill Swap Server...");
+    console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
+    console.log(`🔌 Port: ${PORT}`);
+    console.log(`🌐 Frontend URL: ${FRONTEND_URL}`);
+    console.log(`🗄️  MongoDB URI: ${MONGO_URI ? 'Set' : 'Not set'}`);
+    
     await mongoose.connect(MONGO_URI, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
@@ -135,6 +172,7 @@ const startServer = async () => {
 
     server.listen(PORT, () => {
       console.log(`🚀 Server is running on http://localhost:${PORT}`);
+      console.log("🎯 Health check available at /api/health");
     });
   } catch (error) {
     console.error("❌ Error connecting to MongoDB:", error.message);
