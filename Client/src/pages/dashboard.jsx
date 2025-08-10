@@ -10,7 +10,7 @@ import { ScaleLoader } from "react-spinners";
 import UserCard from "../components/card";
 import AppContext from "../context/AppContext.jsx";
 import { Users, BookOpen, Zap, Target, Filter, Sparkles } from "lucide-react";
-import "../styles/Dashboard.css";
+import "../styles/dashboard.css";
 
 function Dashboard() {
   const [matches, setMatches] = useState([]);

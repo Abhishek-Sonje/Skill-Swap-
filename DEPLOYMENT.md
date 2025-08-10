@@ -1,6 +1,17 @@
 # Skill Swap - Deployment Guide
 
-This guide covers deploying the Skill Swap application to various platforms.
+This guide covers deploying the Skill Swap application, with a focus on **Vercel** (frontend) and **Render** (backend).
+
+## 🚀 Recommended Deployment: Vercel + Render
+
+For the best deployment experience, we recommend:
+- **Frontend**: Deploy to [Vercel](https://vercel.com) (free tier available)
+- **Backend**: Deploy to [Render](https://render.com) (free tier available)
+- **Database**: Use [MongoDB Atlas](https://www.mongodb.com/atlas) (free tier available)
+
+**Quick Start:**
+1. See [VERCEL_DEPLOYMENT.md](./VERCEL_DEPLOYMENT.md) for frontend deployment
+2. See [RENDER_DEPLOYMENT.md](./RENDER_DEPLOYMENT.md) for backend deployment
 
 ## Prerequisites
 

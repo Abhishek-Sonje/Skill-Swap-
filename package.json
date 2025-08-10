@@ -11,6 +11,7 @@
     "build:client": "cd Client && npm run build",
     "start": "cd Server && npm start",
     "install:all": "npm install && cd Server && npm install && cd ../Client && npm install",
+    "vercel-build": "cd Client && npm run build",
     "test": "echo \"No tests specified\" && exit 1"
   },
   "keywords": [

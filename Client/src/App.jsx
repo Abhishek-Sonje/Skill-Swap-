@@ -5,9 +5,9 @@ import { ToastContainer } from "react-toastify";
 
 // Pages
 import HomePage from "./pages/HomePage";
-import Dashboard from "./pages/Dashboard";
-import ProfileSetup from "./pages/ProfileSetup";
-import UserLogin from "./pages/UserLogin";
+import Dashboard from "./pages/dashboard";
+import ProfileSetup from "./pages/profileSetup";
+import UserLogin from "./pages/userLogin";
 import UserProfilePage from "./pages/UserProfilePage";
 
 // Context & Components
