@@ -104,7 +104,7 @@ export default function ProfileSetup() {
     }));
   };
 
-  const handleSubmit =async () => {
+  const handleSubmit = async () => {
     try {
       const completedProfile = {
         role: profileData.role,
@@ -112,7 +112,7 @@ export default function ProfileSetup() {
         teachSkills: profileData.skillsToTeach,
         completed_profile: true,
       };
-      const { data } =await axios.put(
+      const { data } = await axios.put(
         `${backendUrl}/api/users/update-profile`,
         completedProfile,
         {
@@ -121,13 +121,11 @@ export default function ProfileSetup() {
       );
 
       if (data.success) {
-        console.log("Profile updated successfully:", data);
         setUserData(data.user);
         toast.success("Profile setup completed successfully!");
         navigate(`/dashboard`);
       }
     } catch (err) {
-      console.error("Error completing profile:", err.message);
       toast.error("Failed to complete profile setup. Please try again.");
       return;
     } 

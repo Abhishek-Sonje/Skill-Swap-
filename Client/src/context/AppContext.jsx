@@ -27,16 +27,23 @@ export const AppContextProvider = ({ children }) => {
           setUserData(null);
         }
       } catch (error) {
-        console.error("Error fetching user info:", error.message);
-        setIsLoggedin(false);
-        setUserData(null);
+        // Only reset auth state if we don't already have user data
+        if (!userData) {
+          setIsLoggedin(false);
+          setUserData(null);
+        }
       } finally {
-        setLoading(false); // ✅ Always set loading false at the end
+        setLoading(false);
       }
     };
 
     fetchUserInfo();
-  }, [backendUrl]);
+  }, [backendUrl, userData]);
+
+  const setAuthState = (isLoggedIn, user) => {
+    setIsLoggedin(isLoggedIn);
+    setUserData(user);
+  };
 
   const value = {
     isLoggedin,
@@ -45,6 +52,7 @@ export const AppContextProvider = ({ children }) => {
     setUserData,
     backendUrl,
     loading, // ✅ Provide loading globally
+    setAuthState, // Add this function to the context
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

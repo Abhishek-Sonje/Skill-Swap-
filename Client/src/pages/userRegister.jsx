@@ -10,7 +10,7 @@ const avatarConfig = genConfig();
 
 const UserRegister = () => {
   const navigate = useNavigate();
-  const { setIsLoggedin, setUserData } = useContext(AppContext);
+  const { setAuthState } = useContext(AppContext);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -213,9 +213,8 @@ const UserRegister = () => {
       if (saveUser.status === 201) {
         setSubmitMessage("Registration successful! Welcome to Skill Swap!");
         
-        // Update authentication state
-        setIsLoggedin(true);
-        setUserData(saveUser.data.user);
+        // Update authentication state using the context function
+        setAuthState(true, saveUser.data.user);
         
         // Navigate to dashboard
         navigate(`/dashboard/${saveUser.data.user._id}`);
