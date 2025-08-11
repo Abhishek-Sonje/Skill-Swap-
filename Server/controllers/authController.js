@@ -3,24 +3,35 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 const register = async (req, res) => {
+  console.log("📝 Signup attempt received:", { 
+    body: req.body, 
+    contentType: req.get('Content-Type'),
+    userAgent: req.get('User-Agent')
+  });
+
   const { name, email, password, role, teachSkills, learnSkills } = req.body;
 
   if (!name || !email || !password) {
+    console.log("❌ Missing required fields:", { name: !!name, email: !!email, password: !!password });
     return res
       .status(400)
       .json({ success: false, message: "Missing required fields" });
   }
 
   try {
+    console.log("🔍 Checking for existing user with email:", email);
     const existingUser = await User.findOne({ email });
     if (existingUser) {
+      console.log("❌ User already exists:", email);
       return res
         .status(400)
         .json({ success: false, message: "User already exists" });
     }
 
+    console.log("🔐 Hashing password...");
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    console.log("👤 Creating new user...");
     const newUser = new User({
       name,
       email,
@@ -30,20 +41,24 @@ const register = async (req, res) => {
       learnSkills,
     });
 
+    console.log("💾 Saving user to database...");
     const savedUser = await newUser.save();
+    console.log("✅ User saved successfully:", savedUser._id);
 
+    console.log("🎫 Generating JWT token...");
     const token = jwt.sign({ id: savedUser._id }, process.env.JWT_SECRET, {
       expiresIn: "7d",
     });
 
+    console.log("🍪 Setting cookie...");
     res.cookie("token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      // sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
       sameSite: "lax", // Adjusted for compatibility
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
+    console.log("🎉 Signup completed successfully");
     res.status(201).json({
       success: true,
       message: "Account created successfully",
@@ -51,6 +66,8 @@ const register = async (req, res) => {
       token,
     });
   } catch (error) {
+    console.error("❌ Signup error:", error);
+    console.error("❌ Error stack:", error.stack);
     res.status(500).json({
       success: false,
       message: error.message || "Server error",

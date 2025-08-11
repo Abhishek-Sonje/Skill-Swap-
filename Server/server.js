@@ -1,7 +1,6 @@
 const http = require("http");
 const express = require("express");
 const cors = require("cors");
-const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const cookieParser = require("cookie-parser");
 const { Server } = require("socket.io");
@@ -22,8 +21,22 @@ const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173";
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: FRONTEND_URL, // 👈 frontend origin from environment
-    credentials: true, // 👈 allow credentials (cookies )
+    origin: function (origin, callback) {
+      // Allow requests with no origin (like mobile apps or curl requests)
+      if (!origin) return callback(null, true);
+      
+      // Remove trailing slash for comparison
+      const cleanOrigin = origin.replace(/\/$/, '');
+      const allowedOrigin = FRONTEND_URL.replace(/\/$/, '');
+      
+      if (cleanOrigin === allowedOrigin) {
+        callback(null, true);
+      } else {
+        console.log(`🚫 Socket.IO CORS blocked: ${origin} (expected: ${FRONTEND_URL})`);
+        callback(new Error('Not allowed by Socket.IO CORS'));
+      }
+    },
+    credentials: true, // 👈 allow credentials (cookies)
   },
 });
 const userSocketMap = {}; // Track which user is connected to which socket
@@ -83,12 +96,25 @@ io.on("connection", (socket) => {
 // Middleware
 app.use(
   cors({
-    origin: FRONTEND_URL, // 👈 frontend origin from environment
+    origin: function (origin, callback) {
+      // Allow requests with no origin (like mobile apps or curl requests)
+      if (!origin) return callback(null, true);
+      
+      // Remove trailing slash for comparison
+      const cleanOrigin = origin.replace(/\/$/, '');
+      const allowedOrigin = FRONTEND_URL.replace(/\/$/, '');
+      
+      if (cleanOrigin === allowedOrigin) {
+        callback(null, true);
+      } else {
+        console.log(`🚫 CORS blocked: ${origin} (expected: ${FRONTEND_URL})`);
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     credentials: true, // 👈 allow credentials (cookies)
   })
 );
 app.use(cookieParser());
-app.use(bodyParser.json());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -150,6 +176,7 @@ const startServer = async () => {
     console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
     console.log(`🔌 Port: ${PORT}`);
     console.log(`🌐 Frontend URL: ${FRONTEND_URL}`);
+    console.log(`🔒 CORS Origin: ${FRONTEND_URL.replace(/\/$/, '')} (trailing slash removed)`);
     console.log(`🗄️  MongoDB URI: ${MONGO_URI ? 'Set' : 'Not set'}`);
     
     await mongoose.connect(MONGO_URI, {
