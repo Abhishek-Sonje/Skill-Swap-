@@ -1,15 +1,16 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import "../styles/userRegister.css";
 import axios from "axios";
-
 import { genConfig } from "react-nice-avatar";
 import { useNavigate } from "react-router-dom";
-
+import AppContext from "../context/AppContext";
+import { config } from "../config";
 
 const avatarConfig = genConfig();
 
 const UserRegister = () => {
-  const navigate=useNavigate();
+  const navigate = useNavigate();
+  const { setIsLoggedin, setUserData } = useContext(AppContext);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -204,26 +205,38 @@ const UserRegister = () => {
       }
 
       const saveUser = await axios.post(
-        "http://localhost:5000/api/auth/register",
-        newUser
+        `${config.API_URL}/api/auth/signup`,
+        newUser,
+        { withCredentials: true }
       );
       
       if (saveUser.status === 201) {
         setSubmitMessage("Registration successful! Welcome to Skill Swap!");
         
+        // Update authentication state
+        setIsLoggedin(true);
+        setUserData(saveUser.data.user);
+        
+        // Navigate to dashboard
         navigate(`/dashboard/${saveUser.data.user._id}`);
-        // console.log("Registration data:", formData);
       } else {
         throw new Error("Registration failed");
       }
 
-       
-       
     } catch (error) {
-      setSubmitMessage("Registration failed. Please try again.");
-      console.error("Registration Error:", error);
-
-    } 
+      if (error.response) {
+        // Server responded with error
+        setSubmitMessage(error.response.data.message || "Registration failed. Please try again.");
+      } else if (error.request) {
+        // Request was made but no response
+        setSubmitMessage("Network error. Please check your connection.");
+      } else {
+        // Other error
+        setSubmitMessage("Registration failed. Please try again.");
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
