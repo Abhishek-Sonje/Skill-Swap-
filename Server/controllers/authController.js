@@ -53,8 +53,8 @@ const register = async (req, res) => {
     console.log("🍪 Setting cookie...");
     res.cookie("token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax", // Adjusted for compatibility
+      secure: true, // Render uses HTTPS
+      sameSite: "none", // Required for cross-site cookies
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
@@ -106,9 +106,8 @@ const login = async (req, res) => {
 
     res.cookie("token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      // sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
-      sameSite: "lax", // Adjusted for compatibility
+      secure: true, // Render uses HTTPS
+      sameSite: "none", // Required for cross-site cookies
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
@@ -131,9 +130,8 @@ const logout = (req, res) => {
   try {
     res.clearCookie("token", {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      // sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
-      sameSite:"lax", // Adjusted for compatibility
+      secure: true,
+      sameSite: "none",
     });
 
     res.status(200).json({ success: true, message: "Logged out successfully" });

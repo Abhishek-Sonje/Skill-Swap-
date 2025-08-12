@@ -13,6 +13,9 @@ const authRoutes = require("./routes/authRoutes.js");
 const chatRoutes = require("./routes/chatRoutes.js");
 
 const app = express();
+// Trust proxy so secure cookies work behind Render/Heroku
+app.set("trust proxy", 1);
+
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI || "mongodb://localhost:27017/SkillSwap";
 const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173";
