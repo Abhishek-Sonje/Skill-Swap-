@@ -119,7 +119,7 @@ const HomePage = () => {
       {/* How it Works */}
       <section id="how" className="skillswap-how">
         <div className="skillswap-how-container">
-          <h2 className="skillswap-section-title">How SkillSwap Works</h2>
+          <h2 className="skillswap-section-title">How Skillhive Works</h2>
           <div className="skillswap-how-steps">
             {[
               { step: "1", title: "Share Your Skills", desc: "Tell us what you can teach and what you want to learn" },
