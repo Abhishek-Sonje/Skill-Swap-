@@ -44,7 +44,7 @@ function Navbar() {
               alt="SkillSwap Logo"
               className="nav-logo-img"
             />
-            <span className="nav-logo-text">SkillSwap</span>
+            <span className="nav-logo-text">Skillhive</span>
           </Link>
 
           {/* Desktop Navigation */}
