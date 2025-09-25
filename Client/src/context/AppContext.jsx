@@ -26,8 +26,9 @@ export const AppContextProvider = ({ children }) => {
           setIsLoggedin(false);
           setUserData(null);
         }
-      } catch (error) {
+      } catch (e) {
         // Only reset auth state if we don't already have user data
+        console.log(e);
         if (!userData) {
           setIsLoggedin(false);
           setUserData(null);

@@ -21,30 +21,30 @@ const MONGO_URI =
   process.env.MONGO_URI || "mongodb://localhost:27017/SkillSwap";
 const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173";
 
+// Get allowed origins (support multiple origins if needed)
+const getAllowedOrigins = () => {
+  const origins = [FRONTEND_URL.replace(/\/$/, "")]; // Remove trailing slash
+
+  // Add localhost variants for development
+  if (process.env.NODE_ENV !== "production") {
+    origins.push("http://localhost:3000", "http://localhost:5173");
+  }
+
+  return origins;
+};
+
+const allowedOrigins = getAllowedOrigins();
+
 // Chat App
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: function (origin, callback) {
-      // Allow requests with no origin (like mobile apps or curl requests)
-      if (!origin) return callback(null, true);
-
-      // Remove trailing slash for comparison
-      const cleanOrigin = origin.replace(/\/$/, "");
-      const allowedOrigin = FRONTEND_URL.replace(/\/$/, "");
-
-      if (cleanOrigin === allowedOrigin) {
-        callback(null, true);
-      } else {
-        console.log(
-          `🚫 Socket.IO CORS blocked: ${origin} (expected: ${FRONTEND_URL})`
-        );
-        callback(new Error("Not allowed by Socket.IO CORS"));
-      }
-    },
-    credentials: true, // 👈 allow credentials (cookies)
+    origin: allowedOrigins,
+    methods: ["GET", "POST"],
+    credentials: true,
   },
 });
+
 const userSocketMap = {}; // Track which user is connected to which socket
 
 // Socket.IO Logic
@@ -99,40 +99,39 @@ io.on("connection", (socket) => {
   });
 });
 
-// Middleware
+// CORS Middleware - FIXED VERSION
 app.use(
   cors({
     origin: function (origin, callback) {
-      // Allow requests with no origin (like mobile apps or curl requests)
+      // Allow requests with no origin (like mobile apps, Postman, or curl requests)
       if (!origin) return callback(null, true);
 
       // Remove trailing slash for comparison
       const cleanOrigin = origin.replace(/\/$/, "");
-      const allowedOrigin = FRONTEND_URL.replace(/\/$/, "");
 
-      if (cleanOrigin === allowedOrigin) {
+      if (allowedOrigins.includes(cleanOrigin)) {
         callback(null, true);
       } else {
-        console.log(`🚫 CORS blocked: ${origin} (expected: ${FRONTEND_URL})`);
-        callback(new Error("Not allowed by CORS"));
+        console.log(
+          `🚫 CORS blocked: ${origin} (allowed: ${allowedOrigins.join(", ")})`
+        );
+        callback(new Error(`Not allowed by CORS. Origin: ${origin}`));
       }
     },
-    credentials: true, // 👈 allow credentials (cookies)
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
+    exposedHeaders: ["Set-Cookie"],
   })
 );
+
+// Other middleware
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader(
-    "Access-Control-Allow-Methods",
-    "GET, POST, PUT, DELETE, OPTIONS"
-  );
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
-  next();
-});
+// REMOVED THE CONFLICTING MANUAL CORS HEADERS - This was causing the issue!
+// The manual headers were overriding the cors() middleware configuration
 
 // API Endpoints - Register these BEFORE any catch-all routes
 app.use("/api/users", userRoutes);
@@ -145,6 +144,7 @@ app.get("/api/health", (req, res) => {
     status: "OK",
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
+    allowedOrigins: allowedOrigins,
   });
 });
 
@@ -177,9 +177,6 @@ app._router.stack.forEach((middleware) => {
   }
 });
 
-// Note: Static file serving removed since frontend is deployed separately on Vercel
-// and Render only deploys the backend server
-
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error("Error:", err);
@@ -202,12 +199,7 @@ const startServer = async () => {
     console.log(`📊 Environment: ${process.env.NODE_ENV || "development"}`);
     console.log(`🔌 Port: ${PORT}`);
     console.log(`🌐 Frontend URL: ${FRONTEND_URL}`);
-    console.log(
-      `🔒 CORS Origin: ${FRONTEND_URL.replace(
-        /\/$/,
-        ""
-      )} (trailing slash removed)`
-    );
+    console.log(`🔒 Allowed Origins: ${allowedOrigins.join(", ")}`);
     console.log(`🗄️  MongoDB URI: ${MONGO_URI ? "Set" : "Not set"}`);
 
     await mongoose.connect(MONGO_URI, {
@@ -219,6 +211,7 @@ const startServer = async () => {
     server.listen(PORT, () => {
       console.log(`🚀 Server is running on http://localhost:${PORT}`);
       console.log("🎯 Health check available at /api/health");
+      console.log(`🔒 CORS configured for: ${allowedOrigins.join(", ")}`);
     });
   } catch (error) {
     console.error("❌ Error connecting to MongoDB:", error.message);

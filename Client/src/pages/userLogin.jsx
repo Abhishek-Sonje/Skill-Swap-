@@ -5,6 +5,15 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
+// Configure axios globally for this component
+const api = axios.create({
+  withCredentials: true,
+  headers: {
+    "Content-Type": "application/json",
+  },
+  timeout: 10000, // 10 seconds timeout
+});
+
 export default function Login() {
   const navigate = useNavigate();
   const { backendUrl, setIsLoggedin, setUserData, userData } =
@@ -16,6 +25,7 @@ export default function Login() {
     email: "",
     password: "",
   });
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleInputChange = (e) => {
     setFormData({
@@ -25,69 +35,78 @@ export default function Login() {
   };
 
   const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+
     try {
-      e.preventDefault();
-      axios.defaults.withCredentials = true;
+      console.log("🚀 Auth attempt:", {
+        isLogin,
+        backendUrl,
+        email: formData.email,
+      });
+
+      let response;
+
       if (isLogin) {
-        const { data } = await axios.post(
-          `${backendUrl}/api/auth/login`,
-          {
-            email: formData.email,
-            password: formData.password,
-          },
-          { withCredentials: true }
+        console.log("📡 Making login request...");
+        response = await api.post(`${backendUrl}/api/auth/login`, {
+          email: formData.email,
+          password: formData.password,
+        });
+      } else {
+        console.log("📡 Making signup request...");
+        response = await api.post(`${backendUrl}/api/auth/signup`, {
+          name: formData.username,
+          email: formData.email,
+          password: formData.password,
+        });
+      }
+
+      console.log("✅ Auth response:", response.data);
+      const { data } = response;
+
+      if (data.success) {
+        setIsLoggedin(true);
+        setUserData(data.user);
+        toast.success(
+          isLogin ? "Login successful!" : "Account created successfully!"
         );
-        // await myInfo(); // Fetch user info after login
-        console.log("Login successful:", data.user);
 
-        if (data.success) {
-          setIsLoggedin(true);
-          setUserData(data.user);
-          toast.success("Login successful!");
-          if (!data.user.completed_profile) {
-            navigate("/complete-profile");
-          }
-          else {
-            navigate(`/dashboard`);
-          }
-
+        if (!data.user.completed_profile) {
+          navigate("/complete-profile");
         } else {
-          toast.error("Login failed!", data.message);
+          navigate("/dashboard");
         }
       } else {
-        console.log("Signup attempt:", formData);
-        const { data } = await axios.post(
-          `${backendUrl}/api/auth/signup`,
-          {
-            name: formData.username,
-            email: formData.email,
-            password: formData.password,
-          },
-          { withCredentials: true }
-        );
-
-        if (data.success) {
-          setIsLoggedin(true);
-          setUserData(data.user);
-          toast.success("Account created successfully!");
-          if (!data.user.completed_profile) {
-            navigate("/complete-profile");
-          }
-          else {
-            navigate(`/dashboard`);
-          }
-
-        } else {
-          console.error("Signup failed:", data.message);
-          toast.error("Signup failed!", data.message);
-        }
+        console.error("❌ Auth failed:", data.message);
+        toast.error(data.message || "Authentication failed!");
       }
     } catch (error) {
-      const message =
-        error.response?.data?.message || "An error occurred. Please try again.";
-      console.error("Error during authentication:", message);
+      console.error("❌ Auth error:", error);
+
+      // Better error handling
+      let message = "An error occurred. Please try again.";
+
+      if (error.response) {
+        // Server responded with error status
+        message =
+          error.response.data?.message ||
+          error.response.data?.error ||
+          `Server error (${error.response.status})`;
+        console.error("Server error:", error.response.data);
+      } else if (error.request) {
+        // Request was made but no response received
+        message = "Network error. Please check your connection.";
+        console.error("Network error:", error.request);
+      } else {
+        // Something else happened
+        console.error("Request setup error:", error.message);
+      }
+
       toast.error(message);
       setIsLoggedin(false);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -120,6 +139,7 @@ export default function Login() {
                 className="auth-input"
                 placeholder="Enter your username"
                 required
+                disabled={isLoading}
               />
             </div>
           )}
@@ -134,6 +154,7 @@ export default function Login() {
               className="auth-input"
               placeholder="Enter your email"
               required
+              disabled={isLoading}
             />
           </div>
 
@@ -147,11 +168,18 @@ export default function Login() {
               className="auth-input"
               placeholder="Enter your password"
               required
+              disabled={isLoading}
             />
           </div>
 
-          <button type="submit" className="submit-button">
-            {isLogin ? "Sign In" : "Create Account"}
+          <button type="submit" className="submit-button" disabled={isLoading}>
+            {isLoading
+              ? isLogin
+                ? "Signing In..."
+                : "Creating Account..."
+              : isLogin
+              ? "Sign In"
+              : "Create Account"}
           </button>
         </form>
 
@@ -163,6 +191,13 @@ export default function Login() {
             </span>
           </p>
         </div>
+
+        {/* Debug info - remove in production */}
+        {process.env.NODE_ENV === "development" && (
+          <div style={{ fontSize: "12px", color: "#666", marginTop: "10px" }}>
+            Backend URL: {backendUrl}
+          </div>
+        )}
       </div>
     </div>
   );
