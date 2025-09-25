@@ -216,7 +216,7 @@ const UserProfilePage = () => {
             </div>
             <div className="ppage-verification">
               <Award size={16} color="#667eea" />
-              <span>Verified Skill Swapper</span>
+              <span>Verified Skillhive User</span>
             </div>
           </div>
           <div className="ppage-card">

@@ -211,7 +211,7 @@ export default function ProfileSetup() {
         <div className="ps-header">
           <h1 className="ps-logo">Complete Your Profile</h1>
           <p className="ps-subtitle">
-            Set up your Skill Swap profile to get started
+            Set up your Skillhive profile to get started
           </p>
         </div>
 

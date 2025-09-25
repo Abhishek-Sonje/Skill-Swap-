@@ -211,7 +211,7 @@ const UserRegister = () => {
       );
       
       if (saveUser.status === 201) {
-        setSubmitMessage("Registration successful! Welcome to Skill Swap!");
+        setSubmitMessage("Registration successful! Welcome to Skillhive!");
         
         // Update authentication state using the context function
         setAuthState(true, saveUser.data.user);
@@ -242,7 +242,7 @@ const UserRegister = () => {
     <div className="registration-container">
       <div className="form-container">
         <div className="header">
-          <h1 className="title">Join Skill Swap</h1>
+          <h1 className="title">Join Skillhive</h1>
           <p className="subtitle">Share your skills and learn from others</p>
         </div>
 

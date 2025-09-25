@@ -119,7 +119,7 @@ export default function Login() {
     <div className="auth-container">
       <div className="auth-card">
         <div className="auth-header">
-          <h1 className="auth-logo">Skill Swap</h1>
+          <h1 className="auth-logo">Skillhive</h1>
           <p className="auth-subtitle">
             {isLogin
               ? "Welcome back! Sign in to your account"

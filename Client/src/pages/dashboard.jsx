@@ -150,7 +150,7 @@ function Dashboard() {
         <div className="dashboard-hero-content">
           <h1 className="dashboard-hero-title">
             <Sparkles className="dashboard-hero-icon" />
-            Welcome to SkillSwap
+            Welcome to Skillhive
           </h1>
           <p className="dashboard-hero-subtitle">{heroMessages[currentHero]}</p>
 
@@ -176,7 +176,7 @@ function Dashboard() {
 
       {/* Main Content */}
       <main className="dashboard-main">
-        <h2 className="dashboard-section-title">Your Skill Swap Matches</h2>
+        <h2 className="dashboard-section-title">Your Skillhive Matches</h2>
         <p className="dashboard-section-subtitle">
           Connect with amazing people to teach and learn new skills
         </p>

@@ -41,7 +41,7 @@ function Navbar() {
           <Link to="/" className="nav-logo">
             <img
               src={SkillSwaplogo}
-              alt="SkillSwap Logo"
+              alt="Skillhive Logo"
               className="nav-logo-img"
             />
             <span className="nav-logo-text">Skillhive</span>

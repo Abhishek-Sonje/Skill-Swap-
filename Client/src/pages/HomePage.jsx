@@ -52,7 +52,7 @@ const HomePage = () => {
       {/* Header */}
       <header className="skillswap-header">
         <div className="skillswap-logo">
-          SkillSwap
+          Skillhive
         </div>
         <nav className="skillswap-nav">
           <a href="#how" className="skillswap-link">How it Works</a>
@@ -140,7 +140,7 @@ const HomePage = () => {
       <section id="features" className="skillswap-features">
         <div className="skillswap-features-container">
           <h2 className="skillswap-section-title skillswap-features-title">
-            Why Choose SkillSwap?
+            Why Choose Skillhive?
           </h2>
           <div className="skillswap-features-list">
             {features.map((feature, index) => (
@@ -189,7 +189,7 @@ const HomePage = () => {
             className="skillswap-cta-join"
             onClick={() => window.location.href = '/login'}
           >
-            Join SkillSwap Today
+            Join Skillhive Today
           </button>
         </div>
       </section>
@@ -205,7 +205,7 @@ const HomePage = () => {
             <a href="#" className="skillswap-footer-link">Contact</a>
           </div>
           <p className="skillswap-footer-copy">
-            © 2025 SkillSwap. All rights reserved. Made with ❤️ for learners worldwide.
+            © 2025 Skillhive. All rights reserved. Made with ❤️ for learners worldwide.
           </p>
         </div>
       </footer>
